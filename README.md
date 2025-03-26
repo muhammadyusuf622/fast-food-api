@@ -27,6 +27,7 @@
 - name
 - create_at
 - update_at
+
 2. Food:
 - id
 - name
@@ -36,19 +37,23 @@
 - category_id (FK)
 - create_at
 - update_at
+
 3. User:
 - id
 - name
+- phonNumber
 - email
 - imageUrl
 - create_at
 - update_at
+
 4. Orders:
 - id
 - user_id
 - create_at
 - total_price
 - user_id (FK)
+
 5. ordersItem:
 - count
 - order_id (FK)
