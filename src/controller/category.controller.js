@@ -1,7 +1,6 @@
 import { isValidObjectId } from "mongoose"
 import categoryModel from "../models/category.model.js"
 import ErrorHandler from "../utils/ErrorHandler.js"
-import {isValidObjectId} from "mongoose"
 
 
 const getAllcategory = async (req, res, next) => {
