@@ -20,7 +20,7 @@ const FoodSchema = new Schema(
     },
     imgUrl: {
       type: Schema.Types.String,
-      required: false
+      required: false,
     },
     category: {
       type: Schema.Types.ObjectId,

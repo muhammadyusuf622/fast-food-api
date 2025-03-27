@@ -10,7 +10,7 @@ const CategorySchema = new Schema(
     foods: [
       {
         type: Schema.Types.ObjectId,
-        ref: "Food"
+        ref: "Foods"
       },
     ],
   },

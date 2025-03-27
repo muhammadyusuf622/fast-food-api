@@ -1,6 +1,6 @@
 import ErrorHandler from "../utils/ErrorHandler.js";
 
-const errorMiddleware = (req, res, next) => {
+const errorMiddleware = (err, req, res, next) => {
 
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal server error!";

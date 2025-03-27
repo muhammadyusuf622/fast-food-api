@@ -1,11 +1,12 @@
 import { isValidObjectId } from "mongoose"
 import categoryModel from "../models/category.model.js"
 import ErrorHandler from "../utils/ErrorHandler.js"
+import foodsModel from "../models/foods.model.js"
 
 
 const getAllcategory = async (req, res, next) => {
   try {
-    const category = await categoryModel.find()
+    const category = await categoryModel.find().populate("foods")
 
     res.status(200).send({
       message: "success",
@@ -40,31 +41,36 @@ const getById = async (req,res, next) => {
   }
 }
 
-const createCategory = async (req,res, next) => {
+const createCategory = async (req, res, next) => {
   try {
-    const {name} = req.body
+    const { name, foods } = req.body;
 
     const foundedCategory = await categoryModel.findOne({ name });
 
-    if(foundedCategory){
-      throw new ErrorHandler(404, `Category ${name} allaqachon ishlatilgan`)
+    if (foundedCategory) {
+      return res.status(409).send({ message: `Category "${name}" already exists` });
     }
 
-    const data = await categoryModel.create({ name });
 
-    res.status(200).send({
+    const formattedFoods = Array.isArray(foods) ? foods : [foods];
+
+    const data = await categoryModel.create({ name, foods: formattedFoods });
+
+    res.status(201).send({
       message: "success",
-      data: data
-    })
+      data: data,
+    });
+
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
+
 
 const updateCategory = async (req, res, next) => {
   try {
     const id = req.params.id
-    const { name } = req.body
+    const { name, foods } = req.body
 
     if(!isValidObjectId(id)){
       throw new ErrorHandler(400, `Given ID: ${id} is not valid object ID`);
@@ -77,7 +83,21 @@ const updateCategory = async (req, res, next) => {
       throw new ErrorHandler(409, `name ${name} allaqa mavjud`);
     }
 
-    const updateCategoryId = await categoryModel.findByIdAndUpdate(id, {name});
+    if(foods){
+      if(!isValidObjectId(foods)){
+        throw new ErrorHandler(400, `Foods ID ${foods} Error Format`)
+      }
+    }
+
+    if(foods){
+      const foodId = await foodsModel.findById(foods)
+
+      if(!foodId){
+        throw new ErrorHandler(404, `Bunday Food ID ${foods} mavjud emas`)
+      }
+    }
+
+    const updateCategoryId = await categoryModel.findByIdAndUpdate(id, {name, foods}, {new: true});
 
     res.status(200).send({
       message:"success",
