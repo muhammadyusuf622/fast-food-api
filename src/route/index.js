@@ -6,6 +6,6 @@ import productRouter from "./product.route.js";
 const router = Router()
 
 router.use("/categories", categoryRouter)
-router.use("/products", productRouter)
+router.use("/foods", productRouter)
 
 export default router;

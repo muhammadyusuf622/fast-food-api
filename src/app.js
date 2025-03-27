@@ -1,7 +1,7 @@
-import express from "express"
-import errorMiddleware from "./middleware/errorMiddleware.js";
+import express from "express";
 import router from "./route/index.js";
 import Joi from "joi";
+import errorMiddleware from "./middleWare/errorMiddleware.js";
 
 const app = express()
 
