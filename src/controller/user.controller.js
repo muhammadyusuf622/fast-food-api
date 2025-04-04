@@ -2,6 +2,8 @@ import { compare, hash } from "bcrypt";
 import userModel from "../models/user.model.js"
 import ErrorHandler from "../utils/ErrorHandler.js";
 import { isValidObjectId } from "mongoose";
+import jwt from "jsonwebtoken";
+import { ACCSESS_TOKEN_EXPITR_TIME, ACCSESS_TOKEN_SECRET_KEY, REFRESH_TOKEN_EXPITR_TIME, REFRESH_TOKEN_SECRET_KEY } from "../config/jwt.config.js";
 
 const register = async (req, res, next) => {
   try {
@@ -24,8 +26,22 @@ const register = async (req, res, next) => {
       password: passwordHash
     });
 
-    res.status(201).json({
+    const accsessToken = jwt.sign({id: user.id, role: user.role }, ACCSESS_TOKEN_SECRET_KEY, { 
+      expiresIn: ACCSESS_TOKEN_EXPITR_TIME, 
+      algorithm: "HS256"
+    });
+
+    const refreshToken = jwt.sign({id: user.id, role: user.role }, REFRESH_TOKEN_SECRET_KEY, { 
+      expiresIn: REFRESH_TOKEN_EXPITR_TIME, 
+      algorithm: "HS256"
+    });
+
+    res.status(201).send({
       message: "User registered successfully",
+      tokens: {
+        accsessToken,
+        refreshToken
+      },
       data: user
     });
 
@@ -51,6 +67,26 @@ const getAllUsers = async ( req, res, next) => {
     next(error)
   }
 } 
+
+
+const refresh = async (req, res, next) => {
+  try {
+  
+    const {refreshToken} = req.body;
+
+    const data = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET_KEY);
+
+
+  } catch (error) {
+    if(error instanceof jwt.TokenExpiredError){
+      next(new ErrorHandler(422, "Refresh token expired"))
+    } else if(error instanceof jwt.JsonWebTokenError) {
+      next(new ErrorHandler(400, "Invalid refresh token"))
+    } else {
+      next(error)
+    }
+  }
+}
 
 const updateUser = async (req, res, next) => {
   try {
@@ -105,7 +141,6 @@ const login = async (req, res, next) => {
   
     const isMatch = await compare(password, user.password);
 
-    console.log(isMatch)
   
     if (!isMatch) {
       throw new ErrorHandler(409, "Invalid password")

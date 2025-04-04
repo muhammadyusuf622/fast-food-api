@@ -42,6 +42,8 @@
 - id
 - name
 - phonNumber
+- password
+- role
 - email
 - imageUrl
 - create_at

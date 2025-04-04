@@ -1,4 +1,3 @@
-import ErrorHandler from "../utils/ErrorHandler.js";
 
 const errorMiddleware = (err, req, res, next) => {
 
